@@ -28,7 +28,7 @@ OUTPUT_DIR = Path(_custom_output_dir) if _custom_output_dir else BASE_DIR / "res
 
 def login(page):
     """Log in to RXResume."""
-    page.goto("https://rxresu.me/auth/login")
+    page.goto("https://v4.rxresu.me/auth/login")
     page.fill('input[placeholder="john.doe@example.com"]', RXRESUME_EMAIL)
     page.fill('input[type="password"]', RXRESUME_PASSWORD)
     page.click('button:has-text("Sign in")')
@@ -47,7 +47,7 @@ def import_resume(page, json_path: Path):
 def navigate_to_top_resume(page):
     """Navigate to the first resume in the editor."""
     if "/dashboard/resumes" not in page.url:
-        page.goto("https://rxresu.me/dashboard/resumes")
+        page.goto("https://v4.rxresu.me/dashboard/resumes")
         page.wait_for_load_state("networkidle")
 
     # wait a beat for the list to update

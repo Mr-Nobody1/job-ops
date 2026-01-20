@@ -6,7 +6,7 @@ AI-powered job discovery and application pipeline. Automatically finds jobs, sco
 1. **Search**: Scrapes Gradcracker, Indeed, LinkedIn, and UK Visa Sponsorship jobs.
 2. **Score**: AI ranks jobs by suitability using OpenRouter.
 3. **Tailor**: Generates a custom resume summary for top-tier matches.
-4. **Export**: Automates [RxResume](https://rxresu.me) to create tailored PDFs.
+4. **Export**: Automates [RxResume](https://v4.rxresu.me) to create tailored PDFs.
 5. **Manage**: Review and mark jobs as "Applied" via the dashboard (syncs to Notion).
 
 ## Example of generating a tailored resume for a job
