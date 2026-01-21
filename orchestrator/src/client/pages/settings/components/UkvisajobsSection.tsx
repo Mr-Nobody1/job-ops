@@ -5,20 +5,20 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { UpdateSettingsInput } from "@shared/settings-schema"
+import type { NumericSettingValues } from "@client/pages/settings/types"
 
 type UkvisajobsSectionProps = {
-  defaultUkvisajobsMaxJobs: number
-  effectiveUkvisajobsMaxJobs: number
+  values: NumericSettingValues
   isLoading: boolean
   isSaving: boolean
 }
 
 export const UkvisajobsSection: React.FC<UkvisajobsSectionProps> = ({
-  defaultUkvisajobsMaxJobs,
-  effectiveUkvisajobsMaxJobs,
+  values,
   isLoading,
   isSaving,
 }) => {
+  const { effective: effectiveUkvisajobsMaxJobs, default: defaultUkvisajobsMaxJobs } = values
   const { control, formState: { errors } } = useFormContext<UpdateSettingsInput>()
 
   return (
@@ -75,4 +75,3 @@ export const UkvisajobsSection: React.FC<UkvisajobsSectionProps> = ({
     </AccordionItem>
   )
 }
-

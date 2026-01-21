@@ -22,18 +22,14 @@ const JobspyHarness = () => {
     <FormProvider {...methods}>
       <Accordion type="multiple" defaultValue={["jobspy"]}>
         <JobspySection
-          defaultJobspySites={["indeed", "linkedin"]}
-          effectiveJobspySites={["indeed", "linkedin"]}
-          defaultJobspyLocation="UK"
-          effectiveJobspyLocation="UK"
-          defaultJobspyResultsWanted={200}
-          effectiveJobspyResultsWanted={200}
-          defaultJobspyHoursOld={72}
-          effectiveJobspyHoursOld={72}
-          defaultJobspyCountryIndeed="UK"
-          effectiveJobspyCountryIndeed="UK"
-          defaultJobspyLinkedinFetchDescription={true}
-          effectiveJobspyLinkedinFetchDescription={true}
+          values={{
+            sites: { default: ["indeed", "linkedin"], effective: ["indeed", "linkedin"] },
+            location: { default: "UK", effective: "UK" },
+            resultsWanted: { default: 200, effective: 200 },
+            hoursOld: { default: 72, effective: 72 },
+            countryIndeed: { default: "UK", effective: "UK" },
+            linkedinFetchDescription: { default: true, effective: true },
+          }}
           isLoading={false}
           isSaving={false}
         />

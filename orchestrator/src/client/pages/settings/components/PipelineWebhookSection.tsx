@@ -5,20 +5,20 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { UpdateSettingsInput } from "@shared/settings-schema"
+import type { WebhookValues } from "@client/pages/settings/types"
 
 type PipelineWebhookSectionProps = {
-  defaultPipelineWebhookUrl: string
-  effectivePipelineWebhookUrl: string
+  values: WebhookValues
   isLoading: boolean
   isSaving: boolean
 }
 
 export const PipelineWebhookSection: React.FC<PipelineWebhookSectionProps> = ({
-  defaultPipelineWebhookUrl,
-  effectivePipelineWebhookUrl,
+  values,
   isLoading,
   isSaving,
 }) => {
+  const { default: defaultPipelineWebhookUrl, effective: effectivePipelineWebhookUrl } = values
   const { register, formState: { errors } } = useFormContext<UpdateSettingsInput>()
 
   return (
@@ -58,4 +58,3 @@ export const PipelineWebhookSection: React.FC<PipelineWebhookSectionProps> = ({
     </AccordionItem>
   )
 }
-

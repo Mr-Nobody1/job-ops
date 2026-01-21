@@ -6,40 +6,27 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { UpdateSettingsInput } from "@shared/settings-schema"
+import type { JobspyValues } from "@client/pages/settings/types"
 
 type JobspySectionProps = {
-  defaultJobspySites: string[]
-  effectiveJobspySites: string[]
-  defaultJobspyLocation: string
-  effectiveJobspyLocation: string
-  defaultJobspyResultsWanted: number
-  effectiveJobspyResultsWanted: number
-  defaultJobspyHoursOld: number
-  effectiveJobspyHoursOld: number
-  defaultJobspyCountryIndeed: string
-  effectiveJobspyCountryIndeed: string
-  defaultJobspyLinkedinFetchDescription: boolean
-  effectiveJobspyLinkedinFetchDescription: boolean
+  values: JobspyValues
   isLoading: boolean
   isSaving: boolean
 }
 
 export const JobspySection: React.FC<JobspySectionProps> = ({
-  defaultJobspySites,
-  effectiveJobspySites,
-  defaultJobspyLocation,
-  effectiveJobspyLocation,
-  defaultJobspyResultsWanted,
-  effectiveJobspyResultsWanted,
-  defaultJobspyHoursOld,
-  effectiveJobspyHoursOld,
-  defaultJobspyCountryIndeed,
-  effectiveJobspyCountryIndeed,
-  defaultJobspyLinkedinFetchDescription,
-  effectiveJobspyLinkedinFetchDescription,
+  values,
   isLoading,
   isSaving,
 }) => {
+  const {
+    sites,
+    location,
+    resultsWanted,
+    hoursOld,
+    countryIndeed,
+    linkedinFetchDescription,
+  } = values
   const { control, register, formState: { errors } } = useFormContext<UpdateSettingsInput>()
 
   return (
@@ -59,9 +46,9 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
                   render={({ field }) => (
                     <Checkbox
                       id="site-indeed"
-                      checked={field.value?.includes('indeed') ?? defaultJobspySites.includes('indeed')}
+                      checked={field.value?.includes('indeed') ?? sites.default.includes('indeed')}
                       onCheckedChange={(checked) => {
-                        const current = field.value ?? defaultJobspySites
+                        const current = field.value ?? sites.default
                         let next = [...current]
                         if (checked) {
                           if (!next.includes('indeed')) next.push('indeed')
@@ -83,9 +70,9 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
                   render={({ field }) => (
                     <Checkbox
                       id="site-linkedin"
-                      checked={field.value?.includes('linkedin') ?? defaultJobspySites.includes('linkedin')}
+                      checked={field.value?.includes('linkedin') ?? sites.default.includes('linkedin')}
                       onCheckedChange={(checked) => {
-                        const current = field.value ?? defaultJobspySites
+                        const current = field.value ?? sites.default
                         let next = [...current]
                         if (checked) {
                           if (!next.includes('linkedin')) next.push('linkedin')
@@ -106,8 +93,8 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
               Select which sites JobSpy should scrape.
             </div>
             <div className="flex gap-2 text-xs text-muted-foreground">
-              <span>Effective: {(effectiveJobspySites || []).join(', ') || "None"}</span>
-              <span>Default: {(defaultJobspySites || []).join(', ')}</span>
+              <span>Effective: {(sites.effective || []).join(', ') || "None"}</span>
+              <span>Default: {(sites.default || []).join(', ')}</span>
             </div>
           </div>
 
@@ -116,7 +103,7 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
               <div className="text-sm font-medium">Location</div>
               <Input
                 {...register("jobspyLocation")}
-                placeholder={defaultJobspyLocation || "UK"}
+                placeholder={location.default || "UK"}
                 disabled={isLoading || isSaving}
               />
               {errors.jobspyLocation && <p className="text-xs text-destructive">{errors.jobspyLocation.message}</p>}
@@ -124,8 +111,8 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
                 Location to search for jobs (e.g. "UK", "London", "Remote").
               </div>
               <div className="flex gap-2 text-xs text-muted-foreground">
-                <span>Effective: {effectiveJobspyLocation || "—"}</span>
-                <span>Default: {defaultJobspyLocation || "—"}</span>
+                <span>Effective: {location.effective || "—"}</span>
+                <span>Default: {location.default || "—"}</span>
               </div>
             </div>
 
@@ -158,8 +145,8 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
                 Number of results to fetch per term per site. Max 1000.
               </div>
               <div className="flex gap-2 text-xs text-muted-foreground">
-                <span>Effective: {effectiveJobspyResultsWanted}</span>
-                <span>Default: {defaultJobspyResultsWanted}</span>
+                <span>Effective: {resultsWanted.effective}</span>
+                <span>Default: {resultsWanted.default}</span>
               </div>
             </div>
 
@@ -192,8 +179,8 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
                 Max age of jobs in hours (e.g. 72 for 3 days). Max 720 (30 days).
               </div>
               <div className="flex gap-2 text-xs text-muted-foreground">
-                <span>Effective: {effectiveJobspyHoursOld}h</span>
-                <span>Default: {defaultJobspyHoursOld}h</span>
+                <span>Effective: {hoursOld.effective}h</span>
+                <span>Default: {hoursOld.default}h</span>
               </div>
             </div>
 
@@ -201,7 +188,7 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
               <div className="text-sm font-medium">Indeed Country</div>
               <Input
                 {...register("jobspyCountryIndeed")}
-                placeholder={defaultJobspyCountryIndeed || "UK"}
+                placeholder={countryIndeed.default || "UK"}
                 disabled={isLoading || isSaving}
               />
               {errors.jobspyCountryIndeed && <p className="text-xs text-destructive">{errors.jobspyCountryIndeed.message}</p>}
@@ -209,8 +196,8 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
                 Country domain for Indeed (e.g. "UK" for indeed.co.uk).
               </div>
               <div className="flex gap-2 text-xs text-muted-foreground">
-                <span>Effective: {effectiveJobspyCountryIndeed || "—"}</span>
-                <span>Default: {defaultJobspyCountryIndeed || "—"}</span>
+                <span>Effective: {countryIndeed.effective || "—"}</span>
+                <span>Default: {countryIndeed.default || "—"}</span>
               </div>
             </div>
           </div>
@@ -224,7 +211,7 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
               render={({ field }) => (
                 <Checkbox
                   id="linkedin-desc"
-                  checked={field.value ?? defaultJobspyLinkedinFetchDescription}
+                  checked={field.value ?? linkedinFetchDescription.default}
                   onCheckedChange={(checked) => field.onChange(!!checked)}
                   disabled={isLoading || isSaving}
                 />
@@ -241,8 +228,8 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
                 If enabled, JobSpy will make extra requests to fetch full descriptions. Slower but better data.
               </p>
               <div className="flex gap-2 text-xs text-muted-foreground">
-                <span>Effective: {effectiveJobspyLinkedinFetchDescription ? "Yes" : "No"}</span>
-                <span>Default: {defaultJobspyLinkedinFetchDescription ? "Yes" : "No"}</span>
+                <span>Effective: {linkedinFetchDescription.effective ? "Yes" : "No"}</span>
+                <span>Default: {linkedinFetchDescription.default ? "Yes" : "No"}</span>
               </div>
             </div>
           </div>
@@ -251,4 +238,3 @@ export const JobspySection: React.FC<JobspySectionProps> = ({
     </AccordionItem>
   )
 }
-

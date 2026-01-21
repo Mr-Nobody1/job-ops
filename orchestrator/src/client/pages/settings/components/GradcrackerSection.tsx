@@ -5,20 +5,20 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { UpdateSettingsInput } from "@shared/settings-schema"
+import type { NumericSettingValues } from "@client/pages/settings/types"
 
 type GradcrackerSectionProps = {
-  defaultGradcrackerMaxJobsPerTerm: number
-  effectiveGradcrackerMaxJobsPerTerm: number
+  values: NumericSettingValues
   isLoading: boolean
   isSaving: boolean
 }
 
 export const GradcrackerSection: React.FC<GradcrackerSectionProps> = ({
-  defaultGradcrackerMaxJobsPerTerm,
-  effectiveGradcrackerMaxJobsPerTerm,
+  values,
   isLoading,
   isSaving,
 }) => {
+  const { effective: effectiveGradcrackerMaxJobsPerTerm, default: defaultGradcrackerMaxJobsPerTerm } = values
   const { control, formState: { errors } } = useFormContext<UpdateSettingsInput>()
 
   return (
@@ -75,4 +75,3 @@ export const GradcrackerSection: React.FC<GradcrackerSectionProps> = ({
     </AccordionItem>
   )
 }
-

@@ -5,20 +5,20 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { UpdateSettingsInput } from "@shared/settings-schema"
+import type { DisplayValues } from "@client/pages/settings/types"
 
 type DisplaySettingsSectionProps = {
-    defaultShowSponsorInfo: boolean
-    effectiveShowSponsorInfo: boolean
+    values: DisplayValues
     isLoading: boolean
     isSaving: boolean
 }
 
 export const DisplaySettingsSection: React.FC<DisplaySettingsSectionProps> = ({
-    defaultShowSponsorInfo,
-    effectiveShowSponsorInfo,
+    values,
     isLoading,
     isSaving,
 }) => {
+    const { default: defaultShowSponsorInfo, effective: effectiveShowSponsorInfo } = values
     const { control } = useFormContext<UpdateSettingsInput>()
 
     return (
@@ -79,4 +79,3 @@ export const DisplaySettingsSection: React.FC<DisplaySettingsSectionProps> = ({
         </AccordionItem>
     )
 }
-

@@ -5,26 +5,20 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { UpdateSettingsInput } from "@shared/settings-schema"
+import type { ModelValues } from "@client/pages/settings/types"
 
 type ModelSettingsSectionProps = {
-  effectiveModel: string
-  effectiveModelScorer: string
-  effectiveModelTailoring: string
-  effectiveModelProjectSelection: string
-  defaultModel: string
+  values: ModelValues
   isLoading: boolean
   isSaving: boolean
 }
 
 export const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
-  effectiveModel,
-  effectiveModelScorer,
-  effectiveModelTailoring,
-  effectiveModelProjectSelection,
-  defaultModel,
+  values,
   isLoading,
   isSaving,
 }) => {
+  const { effective, default: defaultModel, scorer, tailoring, projectSelection } = values
   const { register, formState: { errors } } = useFormContext<UpdateSettingsInput>()
 
   return (
@@ -57,12 +51,12 @@ export const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
                 <div className="text-sm">Scoring Model</div>
                 <Input
                   {...register("modelScorer")}
-                  placeholder={effectiveModel || "inherit"}
+                  placeholder={effective || "inherit"}
                   disabled={isLoading || isSaving}
                 />
                 {errors.modelScorer && <p className="text-xs text-destructive">{errors.modelScorer.message}</p>}
                 <div className="text-xs text-muted-foreground">
-                  Effective: <span className="font-mono">{effectiveModelScorer || effectiveModel}</span>
+                  Effective: <span className="font-mono">{scorer || effective}</span>
                 </div>
               </div>
 
@@ -70,12 +64,12 @@ export const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
                 <div className="text-sm">Tailoring Model</div>
                 <Input
                   {...register("modelTailoring")}
-                  placeholder={effectiveModel || "inherit"}
+                  placeholder={effective || "inherit"}
                   disabled={isLoading || isSaving}
                 />
                 {errors.modelTailoring && <p className="text-xs text-destructive">{errors.modelTailoring.message}</p>}
                 <div className="text-xs text-muted-foreground">
-                  Effective: <span className="font-mono">{effectiveModelTailoring || effectiveModel}</span>
+                  Effective: <span className="font-mono">{tailoring || effective}</span>
                 </div>
               </div>
 
@@ -83,12 +77,12 @@ export const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
                 <div className="text-sm">Project Selection Model</div>
                 <Input
                   {...register("modelProjectSelection")}
-                  placeholder={effectiveModel || "inherit"}
+                  placeholder={effective || "inherit"}
                   disabled={isLoading || isSaving}
                 />
                 {errors.modelProjectSelection && <p className="text-xs text-destructive">{errors.modelProjectSelection.message}</p>}
                 <div className="text-xs text-muted-foreground">
-                  Effective: <span className="font-mono">{effectiveModelProjectSelection || effectiveModel}</span>
+                  Effective: <span className="font-mono">{projectSelection || effective}</span>
                 </div>
               </div>
             </div>
@@ -99,7 +93,7 @@ export const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
           <div className="grid gap-2 text-sm sm:grid-cols-2">
             <div>
               <div className="text-xs text-muted-foreground">Global Effective</div>
-              <div className="break-words font-mono text-xs">{effectiveModel || "—"}</div>
+              <div className="break-words font-mono text-xs">{effective || "—"}</div>
             </div>
             <div>
               <div className="text-xs text-muted-foreground">Default (env)</div>
@@ -111,4 +105,3 @@ export const ModelSettingsSection: React.FC<ModelSettingsSectionProps> = ({
     </AccordionItem>
   )
 }
-

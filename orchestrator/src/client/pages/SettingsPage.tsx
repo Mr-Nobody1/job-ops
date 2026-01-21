@@ -129,12 +129,12 @@ const getDerivedSettings = (settings: AppSettings | null) => {
       default: settings?.defaultJobCompleteWebhookUrl ?? "",
     },
     ukvisajobs: {
-      effectiveMaxJobs: settings?.ukvisajobsMaxJobs ?? 50,
-      defaultMaxJobs: settings?.defaultUkvisajobsMaxJobs ?? 50,
+      effective: settings?.ukvisajobsMaxJobs ?? 50,
+      default: settings?.defaultUkvisajobsMaxJobs ?? 50,
     },
     gradcracker: {
-      effectiveMaxJobsPerTerm: settings?.gradcrackerMaxJobsPerTerm ?? 50,
-      defaultMaxJobsPerTerm: settings?.defaultGradcrackerMaxJobsPerTerm ?? 50,
+      effective: settings?.gradcrackerMaxJobsPerTerm ?? 50,
+      default: settings?.defaultGradcrackerMaxJobsPerTerm ?? 50,
     },
     searchTerms: {
       effective: settings?.searchTerms ?? [],
@@ -167,8 +167,8 @@ const getDerivedSettings = (settings: AppSettings | null) => {
       },
     },
     display: {
-      effectiveShowSponsorInfo: settings?.showSponsorInfo ?? true,
-      defaultShowSponsorInfo: settings?.defaultShowSponsorInfo ?? true,
+      effective: settings?.showSponsorInfo ?? true,
+      default: settings?.defaultShowSponsorInfo ?? true,
     },
     defaultResumeProjects: settings?.defaultResumeProjects ?? null,
     profileProjects,
@@ -253,8 +253,8 @@ export const SettingsPage: React.FC = () => {
         pipelineWebhookUrl: normalizeString(data.pipelineWebhookUrl),
         jobCompleteWebhookUrl: normalizeString(data.jobCompleteWebhookUrl),
         resumeProjects: resumeProjectsOverride,
-        ukvisajobsMaxJobs: nullIfSame(data.ukvisajobsMaxJobs, ukvisajobs.defaultMaxJobs),
-        gradcrackerMaxJobsPerTerm: nullIfSame(data.gradcrackerMaxJobsPerTerm, gradcracker.defaultMaxJobsPerTerm),
+        ukvisajobsMaxJobs: nullIfSame(data.ukvisajobsMaxJobs, ukvisajobs.default),
+        gradcrackerMaxJobsPerTerm: nullIfSame(data.gradcrackerMaxJobsPerTerm, gradcracker.default),
         searchTerms: nullIfSameList(data.searchTerms, searchTerms.default),
         jobspyLocation: nullIfSame(data.jobspyLocation, jobspy.location.default),
         jobspyResultsWanted: nullIfSame(data.jobspyResultsWanted, jobspy.resultsWanted.default),
@@ -265,7 +265,7 @@ export const SettingsPage: React.FC = () => {
           data.jobspyLinkedinFetchDescription,
           jobspy.linkedinFetchDescription.default
         ),
-        showSponsorInfo: nullIfSame(data.showSponsorInfo, display.defaultShowSponsorInfo),
+        showSponsorInfo: nullIfSame(data.showSponsorInfo, display.default),
       }
 
       const updated = await api.updateSettings(payload)
@@ -361,57 +361,37 @@ export const SettingsPage: React.FC = () => {
       <main className="container mx-auto max-w-3xl space-y-6 px-4 py-6 pb-12">
         <Accordion type="multiple" className="w-full space-y-4">
           <ModelSettingsSection
-            effectiveModel={model.effective}
-            effectiveModelScorer={model.scorer}
-            effectiveModelTailoring={model.tailoring}
-            effectiveModelProjectSelection={model.projectSelection}
-            defaultModel={model.default}
+            values={model}
             isLoading={isLoading}
             isSaving={isSaving}
           />
           <PipelineWebhookSection
-            defaultPipelineWebhookUrl={pipelineWebhook.default}
-            effectivePipelineWebhookUrl={pipelineWebhook.effective}
+            values={pipelineWebhook}
             isLoading={isLoading}
             isSaving={isSaving}
           />
           <JobCompleteWebhookSection
-            defaultJobCompleteWebhookUrl={jobCompleteWebhook.default}
-            effectiveJobCompleteWebhookUrl={jobCompleteWebhook.effective}
+            values={jobCompleteWebhook}
             isLoading={isLoading}
             isSaving={isSaving}
           />
           <UkvisajobsSection
-            defaultUkvisajobsMaxJobs={ukvisajobs.defaultMaxJobs}
-            effectiveUkvisajobsMaxJobs={ukvisajobs.effectiveMaxJobs}
+            values={ukvisajobs}
             isLoading={isLoading}
             isSaving={isSaving}
           />
           <GradcrackerSection
-            defaultGradcrackerMaxJobsPerTerm={gradcracker.defaultMaxJobsPerTerm}
-            effectiveGradcrackerMaxJobsPerTerm={gradcracker.effectiveMaxJobsPerTerm}
+            values={gradcracker}
             isLoading={isLoading}
             isSaving={isSaving}
           />
           <SearchTermsSection
-            defaultSearchTerms={searchTerms.default}
-            effectiveSearchTerms={searchTerms.effective}
+            values={searchTerms}
             isLoading={isLoading}
             isSaving={isSaving}
           />
           <JobspySection
-            defaultJobspySites={jobspy.sites.default}
-            effectiveJobspySites={jobspy.sites.effective}
-            defaultJobspyLocation={jobspy.location.default}
-            effectiveJobspyLocation={jobspy.location.effective}
-            defaultJobspyResultsWanted={jobspy.resultsWanted.default}
-            effectiveJobspyResultsWanted={jobspy.resultsWanted.effective}
-            defaultJobspyHoursOld={jobspy.hoursOld.default}
-            effectiveJobspyHoursOld={jobspy.hoursOld.effective}
-            defaultJobspyCountryIndeed={jobspy.countryIndeed.default}
-            effectiveJobspyCountryIndeed={jobspy.countryIndeed.effective}
-            defaultJobspyLinkedinFetchDescription={jobspy.linkedinFetchDescription.default}
-            effectiveJobspyLinkedinFetchDescription={jobspy.linkedinFetchDescription.effective}
+            values={jobspy}
             isLoading={isLoading}
             isSaving={isSaving}
           />
@@ -423,8 +403,7 @@ export const SettingsPage: React.FC = () => {
             isSaving={isSaving}
           />
           <DisplaySettingsSection
-            defaultShowSponsorInfo={display.defaultShowSponsorInfo}
-            effectiveShowSponsorInfo={display.effectiveShowSponsorInfo}
+            values={display}
             isLoading={isLoading}
             isSaving={isSaving}
           />

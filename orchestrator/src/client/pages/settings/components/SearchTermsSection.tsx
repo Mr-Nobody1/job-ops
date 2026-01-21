@@ -4,20 +4,20 @@ import { useFormContext, Controller } from "react-hook-form"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Separator } from "@/components/ui/separator"
 import { UpdateSettingsInput } from "@shared/settings-schema"
+import type { SearchTermsValues } from "@client/pages/settings/types"
 
 type SearchTermsSectionProps = {
-  defaultSearchTerms: string[]
-  effectiveSearchTerms: string[]
+  values: SearchTermsValues
   isLoading: boolean
   isSaving: boolean
 }
 
 export const SearchTermsSection: React.FC<SearchTermsSectionProps> = ({
-  defaultSearchTerms,
-  effectiveSearchTerms,
+  values,
   isLoading,
   isSaving,
 }) => {
+  const { default: defaultSearchTerms, effective: effectiveSearchTerms } = values
   const { control, formState: { errors } } = useFormContext<UpdateSettingsInput>()
 
   return (
@@ -75,4 +75,3 @@ export const SearchTermsSection: React.FC<SearchTermsSectionProps> = ({
     </AccordionItem>
   )
 }
-
