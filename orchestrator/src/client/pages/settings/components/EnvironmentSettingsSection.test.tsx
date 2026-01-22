@@ -56,7 +56,6 @@ describe("EnvironmentSettingsSection", () => {
     expect(screen.getByText("sk-1********")).toBeInTheDocument()
     expect(screen.getByText("pass********")).toBeInTheDocument()
     expect(screen.getByText("abcd********")).toBeInTheDocument()
-    expect(screen.getByText("sec-********")).toBeInTheDocument()
     expect(screen.getByText("Not set")).toBeInTheDocument()
 
     // Basic Auth

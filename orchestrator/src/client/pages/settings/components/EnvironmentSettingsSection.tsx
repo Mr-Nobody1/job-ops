@@ -50,16 +50,6 @@ export const EnvironmentSettingsSection: React.FC<EnvironmentSettingsSectionProp
                 error={errors.openrouterApiKey?.message as string | undefined}
                 current={formatSecretHint(privateValues.openrouterApiKeyHint)}
               />
-
-              <SettingsInput
-                label="Webhook secret"
-                inputProps={register("webhookSecret")}
-                type="password"
-                placeholder="Enter new secret"
-                disabled={isLoading || isSaving}
-                error={errors.webhookSecret?.message as string | undefined}
-                current={formatSecretHint(privateValues.webhookSecretHint)}
-              />
             </div>
           </div>
 

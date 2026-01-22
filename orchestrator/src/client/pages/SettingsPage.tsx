@@ -16,10 +16,9 @@ import { DangerZoneSection } from "@client/pages/settings/components/DangerZoneS
 import { DisplaySettingsSection } from "@client/pages/settings/components/DisplaySettingsSection"
 import { EnvironmentSettingsSection } from "@client/pages/settings/components/EnvironmentSettingsSection"
 import { GradcrackerSection } from "@client/pages/settings/components/GradcrackerSection"
-import { JobCompleteWebhookSection } from "@client/pages/settings/components/JobCompleteWebhookSection"
 import { JobspySection } from "@client/pages/settings/components/JobspySection"
 import { ModelSettingsSection } from "@client/pages/settings/components/ModelSettingsSection"
-import { PipelineWebhookSection } from "@client/pages/settings/components/PipelineWebhookSection"
+import { WebhooksSection } from "@client/pages/settings/components/WebhooksSection"
 import { ResumeProjectsSection } from "@client/pages/settings/components/ResumeProjectsSection"
 import { SearchTermsSection } from "@client/pages/settings/components/SearchTermsSection"
 import { UkvisajobsSection } from "@client/pages/settings/components/UkvisajobsSection"
@@ -452,13 +451,10 @@ export const SettingsPage: React.FC = () => {
             isLoading={isLoading}
             isSaving={isSaving}
           />
-          <PipelineWebhookSection
-            values={pipelineWebhook}
-            isLoading={isLoading}
-            isSaving={isSaving}
-          />
-          <JobCompleteWebhookSection
-            values={jobCompleteWebhook}
+          <WebhooksSection
+            pipelineWebhook={pipelineWebhook}
+            jobCompleteWebhook={jobCompleteWebhook}
+            webhookSecretHint={envSettings.private.webhookSecretHint}
             isLoading={isLoading}
             isSaving={isSaving}
           />
