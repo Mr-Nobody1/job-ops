@@ -71,6 +71,8 @@ Settings gives you runtime overrides for the key parts of discovery, scoring, ta
 ![Display settings section](/img/features/settings-display-section.png)
 
 - Toggle visa sponsor badge visibility in job lists/details
+- Toggle `Render Markdown in job descriptions` to control whether expanded job descriptions show formatted headings, lists, bold text, and code blocks
+- Default: Markdown rendering is enabled
 
 ### Writing Style & Language
 

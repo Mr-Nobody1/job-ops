@@ -186,6 +186,11 @@ export const createAppSettings = (
     override: null,
   },
   showSponsorInfo: { value: true, default: true, override: null },
+  renderMarkdownInJobDescriptions: {
+    value: true,
+    default: true,
+    override: null,
+  },
   chatStyleTone: {
     value: "professional",
     default: "professional",

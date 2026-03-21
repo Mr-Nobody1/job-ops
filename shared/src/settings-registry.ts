@@ -371,6 +371,13 @@ export const settingsRegistry = {
     parse: parseBitBoolOrNull,
     serialize: serializeBitBool,
   },
+  renderMarkdownInJobDescriptions: {
+    kind: "typed" as const,
+    schema: z.boolean(),
+    default: (): boolean => true,
+    parse: parseBitBoolOrNull,
+    serialize: serializeBitBool,
+  },
   chatStyleTone: {
     kind: "typed" as const,
     schema: z.string().trim().max(100),

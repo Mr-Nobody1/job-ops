@@ -31,6 +31,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
+import { getRenderableJobDescription } from "@/client/lib/jobDescription";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -46,7 +47,6 @@ import {
   copyTextToClipboard,
   formatJobForWebhook,
   safeFilenamePart,
-  stripHtml,
 } from "@/lib/utils";
 import type { FilterTab } from "./constants";
 
@@ -105,10 +105,7 @@ export const JobDetailPanel: React.FC<JobDetailPanelProps> = ({
   }, [onPauseRefreshChange]);
 
   const description = useMemo(() => {
-    if (!selectedJob?.jobDescription) return "No description available.";
-    const jd = selectedJob.jobDescription;
-    if (jd.includes("<") && jd.includes(">")) return stripHtml(jd);
-    return jd;
+    return getRenderableJobDescription(selectedJob?.jobDescription);
   }, [selectedJob]);
 
   useEffect(() => {

@@ -45,7 +45,10 @@ vi.mock("@/components/ui/dropdown-menu", () => {
 });
 
 vi.mock("@client/hooks/useSettings", () => ({
-  useSettings: () => ({ showSponsorInfo: false }),
+  useSettings: () => ({
+    showSponsorInfo: false,
+    renderMarkdownInJobDescriptions: true,
+  }),
 }));
 
 vi.mock("@client/api", () => ({
@@ -161,5 +164,32 @@ describe("DiscoveredPanel", () => {
     expect(
       screen.getByRole("link", { name: /open job listing/i }),
     ).toHaveAttribute("href", "https://example.com/jobs/visit-me");
+  });
+
+  it("renders markdown formatting in the expanded job description by default", () => {
+    const job = createJob({
+      jobDescription:
+        "# Responsibilities\n\n- Build APIs\n- Improve reliability",
+    });
+
+    render(
+      <MemoryRouter>
+        <DiscoveredPanel
+          job={job}
+          onJobUpdated={vi.fn()}
+          onJobMoved={vi.fn()}
+        />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /view full job description/i }),
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Responsibilities" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Build APIs")).toBeInTheDocument();
+    expect(screen.queryByText("# Responsibilities")).not.toBeInTheDocument();
   });
 });

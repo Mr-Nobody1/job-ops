@@ -57,6 +57,12 @@ describe("settingsRegistry helpers", () => {
       expect(settingsRegistry.showSponsorInfo.parse("false")).toBe(false);
       expect(settingsRegistry.showSponsorInfo.parse("")).toBeNull();
       expect(settingsRegistry.showSponsorInfo.parse(undefined)).toBeNull();
+      expect(settingsRegistry.renderMarkdownInJobDescriptions.parse("1")).toBe(
+        true,
+      );
+      expect(settingsRegistry.renderMarkdownInJobDescriptions.parse("0")).toBe(
+        false,
+      );
     });
 
     it("serializes bit bools correctly", () => {
@@ -64,6 +70,12 @@ describe("settingsRegistry helpers", () => {
       expect(settingsRegistry.showSponsorInfo.serialize(false)).toBe("0");
       expect(settingsRegistry.showSponsorInfo.serialize(null)).toBeNull();
       expect(settingsRegistry.showSponsorInfo.serialize(undefined)).toBeNull();
+      expect(
+        settingsRegistry.renderMarkdownInJobDescriptions.serialize(true),
+      ).toBe("1");
+      expect(
+        settingsRegistry.renderMarkdownInJobDescriptions.serialize(false),
+      ).toBe("0");
     });
   });
 

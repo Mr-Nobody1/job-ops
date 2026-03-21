@@ -73,6 +73,7 @@ const DEFAULT_FORM_VALUES: UpdateSettingsInput = {
   rxresumeMode: "v5",
   rxresumeBaseResumeId: null,
   showSponsorInfo: null,
+  renderMarkdownInJobDescriptions: null,
   chatStyleTone: "",
   chatStyleFormality: "",
   chatStyleConstraints: "",
@@ -149,6 +150,7 @@ const NULL_SETTINGS_PAYLOAD: UpdateSettingsInput = {
   rxresumeMode: null,
   rxresumeBaseResumeId: null,
   showSponsorInfo: null,
+  renderMarkdownInJobDescriptions: null,
   chatStyleTone: null,
   chatStyleFormality: null,
   chatStyleConstraints: null,
@@ -192,6 +194,8 @@ const mapSettingsToForm = (data: AppSettings): UpdateSettingsInput => ({
   rxresumeMode: data.rxresumeMode.override ?? data.rxresumeMode.value,
   rxresumeBaseResumeId: data.rxresumeBaseResumeId,
   showSponsorInfo: data.showSponsorInfo.override,
+  renderMarkdownInJobDescriptions:
+    data.renderMarkdownInJobDescriptions.override,
   chatStyleTone: data.chatStyleTone.override ?? "",
   chatStyleFormality: data.chatStyleFormality.override ?? "",
   chatStyleConstraints: data.chatStyleConstraints.override ?? "",
@@ -296,8 +300,14 @@ const getDerivedSettings = (settings: AppSettings | null) => {
       default: settings?.jobCompleteWebhookUrl?.default ?? "",
     },
     display: {
-      effective: settings?.showSponsorInfo?.value ?? true,
-      default: settings?.showSponsorInfo?.default ?? true,
+      showSponsorInfo: {
+        effective: settings?.showSponsorInfo?.value ?? true,
+        default: settings?.showSponsorInfo?.default ?? true,
+      },
+      renderMarkdownInJobDescriptions: {
+        effective: settings?.renderMarkdownInJobDescriptions?.value ?? true,
+        default: settings?.renderMarkdownInJobDescriptions?.default ?? true,
+      },
     },
     chat: {
       tone: {
@@ -853,7 +863,14 @@ export const SettingsPage: React.FC = () => {
         ...(dirtyFields.rxresumeBaseResumeId
           ? { rxresumeBaseResumeId: normalizeString(data.rxresumeBaseResumeId) }
           : {}),
-        showSponsorInfo: nullIfSame(data.showSponsorInfo, display.default),
+        showSponsorInfo: nullIfSame(
+          data.showSponsorInfo,
+          display.showSponsorInfo.default,
+        ),
+        renderMarkdownInJobDescriptions: nullIfSame(
+          data.renderMarkdownInJobDescriptions,
+          display.renderMarkdownInJobDescriptions.default,
+        ),
         chatStyleTone: normalizeString(data.chatStyleTone),
         chatStyleFormality: normalizeString(data.chatStyleFormality),
         chatStyleConstraints: normalizeString(data.chatStyleConstraints),
