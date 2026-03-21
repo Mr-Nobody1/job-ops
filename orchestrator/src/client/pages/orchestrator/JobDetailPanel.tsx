@@ -13,6 +13,7 @@ import {
   useSkipJobMutation,
 } from "@client/hooks/queries/useJobMutations";
 import { useProfile } from "@client/hooks/useProfile";
+import { useSettings } from "@client/hooks/useSettings";
 import type { Job, JobListItem } from "@shared/types.js";
 import {
   CheckCircle2,
@@ -28,9 +29,8 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
+import { JobDescriptionMarkdown } from "@/client/components/JobDescriptionMarkdown";
 import { getRenderableJobDescription } from "@/client/lib/jobDescription";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,6 +82,7 @@ export const JobDetailPanel: React.FC<JobDetailPanelProps> = ({
   const skipJobMutation = useSkipJobMutation();
 
   const { personName } = useProfile();
+  const { renderMarkdownInJobDescriptions } = useSettings();
 
   const handleTailoringDirtyChange = useCallback(
     (isDirty: boolean) => {
@@ -780,11 +781,11 @@ export const JobDetailPanel: React.FC<JobDetailPanelProps> = ({
                   </Button>
                 </div>
               </div>
+            ) : renderMarkdownInJobDescriptions ? (
+              <JobDescriptionMarkdown description={description} />
             ) : (
               <div className="whitespace-pre-wrap leading-relaxed">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {description}
-                </ReactMarkdown>
+                {description}
               </div>
             )}
           </div>

@@ -10,6 +10,15 @@ import { JobDetailPanel } from "./JobDetailPanel";
 const render = (ui: Parameters<typeof renderWithQueryClient>[0]) =>
   renderWithQueryClient(ui);
 
+const mockSettings = {
+  settings: null,
+  error: null,
+  isLoading: false,
+  showSponsorInfo: true,
+  renderMarkdownInJobDescriptions: true,
+  refreshSettings: vi.fn(),
+};
+
 vi.mock("@/components/ui/dropdown-menu", () => {
   return {
     DropdownMenu: ({ children }: { children: React.ReactNode }) => (
@@ -49,6 +58,10 @@ vi.mock("@client/components", () => ({
   JobHeader: () => <div data-testid="job-header" />,
   FitAssessment: () => <div data-testid="fit-assessment" />,
   TailoredSummary: () => <div data-testid="tailored-summary" />,
+}));
+
+vi.mock("@client/hooks/useSettings", () => ({
+  useSettings: () => mockSettings,
 }));
 
 vi.mock("@client/components/ReadyPanel", () => ({
@@ -146,6 +159,7 @@ const renderJobDetailPanel = async (
 describe("JobDetailPanel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSettings.renderMarkdownInJobDescriptions = true;
   });
 
   it("renders the discovered panel when active tab is discovered", async () => {
@@ -186,6 +200,51 @@ describe("JobDetailPanel", () => {
     });
 
     expect(screen.getByText("Hello world")).toBeInTheDocument();
+  });
+
+  it("renders markdown in the description tab when enabled", async () => {
+    await renderJobDetailPanel({
+      activeTab: "all",
+      activeJobs: [],
+      selectedJob: createJob({
+        jobDescription: "# Responsibilities\n\n- Build APIs",
+      }),
+      onSelectJobId: vi.fn(),
+      onJobUpdated: vi.fn().mockResolvedValue(undefined),
+    });
+
+    fireEvent.mouseDown(screen.getByRole("tab", { name: /description/i }));
+
+    expect(
+      screen.getByRole("heading", { name: "Responsibilities" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("# Responsibilities")).not.toBeInTheDocument();
+  });
+
+  it("renders raw markdown in the description tab when disabled", async () => {
+    mockSettings.renderMarkdownInJobDescriptions = false;
+
+    const rendered = await renderJobDetailPanel({
+      activeTab: "all",
+      activeJobs: [],
+      selectedJob: createJob({
+        jobDescription: "# Responsibilities\n\n- Build APIs",
+      }),
+      onSelectJobId: vi.fn(),
+      onJobUpdated: vi.fn().mockResolvedValue(undefined),
+    });
+
+    fireEvent.mouseDown(screen.getByRole("tab", { name: /description/i }));
+
+    const rawDescription = rendered.container.querySelector(
+      "div.whitespace-pre-wrap",
+    );
+    expect(rawDescription?.textContent).toBe(
+      "# Responsibilities\n\n- Build APIs",
+    );
+    expect(
+      screen.queryByRole("heading", { name: "Responsibilities" }),
+    ).not.toBeInTheDocument();
   });
 
   it("saves an edited description", async () => {

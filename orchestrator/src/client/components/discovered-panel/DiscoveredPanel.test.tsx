@@ -12,6 +12,11 @@ import { DiscoveredPanel } from "./DiscoveredPanel";
 const render = (ui: Parameters<typeof renderWithQueryClient>[0]) =>
   renderWithQueryClient(ui);
 
+const mockSettings = {
+  showSponsorInfo: false,
+  renderMarkdownInJobDescriptions: true,
+};
+
 vi.mock("@/components/ui/dropdown-menu", () => {
   return {
     DropdownMenu: ({ children }: { children: React.ReactNode }) => (
@@ -45,10 +50,7 @@ vi.mock("@/components/ui/dropdown-menu", () => {
 });
 
 vi.mock("@client/hooks/useSettings", () => ({
-  useSettings: () => ({
-    showSponsorInfo: false,
-    renderMarkdownInJobDescriptions: true,
-  }),
+  useSettings: () => mockSettings,
 }));
 
 vi.mock("@client/api", () => ({
@@ -94,6 +96,8 @@ vi.mock("sonner", () => ({
 describe("DiscoveredPanel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSettings.showSponsorInfo = false;
+    mockSettings.renderMarkdownInJobDescriptions = true;
   });
 
   it("re-runs the fit assessment from the menu", async () => {
@@ -166,7 +170,7 @@ describe("DiscoveredPanel", () => {
     ).toHaveAttribute("href", "https://example.com/jobs/visit-me");
   });
 
-  it("renders markdown formatting in the expanded job description by default", () => {
+  it("renders markdown formatting in the expanded job description when markdown rendering is enabled", () => {
     const job = createJob({
       jobDescription:
         "# Responsibilities\n\n- Build APIs\n- Improve reliability",
@@ -191,5 +195,38 @@ describe("DiscoveredPanel", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Build APIs")).toBeInTheDocument();
     expect(screen.queryByText("# Responsibilities")).not.toBeInTheDocument();
+  });
+
+  it("renders raw markdown in the expanded job description when markdown rendering is disabled", () => {
+    mockSettings.renderMarkdownInJobDescriptions = false;
+
+    const job = createJob({
+      jobDescription:
+        "# Responsibilities\n\n- Build APIs\n- Improve reliability",
+    });
+
+    const rendered = render(
+      <MemoryRouter>
+        <DiscoveredPanel
+          job={job}
+          onJobUpdated={vi.fn()}
+          onJobMoved={vi.fn()}
+        />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /view full job description/i }),
+    );
+
+    const rawDescription = rendered.container.querySelector(
+      "p.whitespace-pre-wrap",
+    );
+    expect(rawDescription?.textContent).toBe(
+      "# Responsibilities\n\n- Build APIs\n- Improve reliability",
+    );
+    expect(
+      screen.queryByRole("heading", { name: "Responsibilities" }),
+    ).not.toBeInTheDocument();
   });
 });

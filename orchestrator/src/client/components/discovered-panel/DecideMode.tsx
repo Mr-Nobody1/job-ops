@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useMemo, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { JobDescriptionMarkdown } from "@/client/components/JobDescriptionMarkdown";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -108,11 +107,7 @@ export const DecideMode: React.FC<DecideModeProps> = ({
         >
           <div className="rounded-xl border border-border/40 bg-muted/5 p-4 mt-2 max-h-[400px] overflow-y-auto shadow-inner">
             {renderMarkdownInJobDescriptions ? (
-              <div className="text-sm leading-relaxed text-foreground [&_h1]:text-lg [&_h1]:font-semibold [&_h2]:text-base [&_h2]:font-semibold [&_h3]:font-semibold [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:bg-background [&_pre]:p-3 [&_code]:rounded [&_code]:bg-background/80 [&_code]:px-1 [&_code]:py-0.5 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_a]:text-primary [&_a]:underline">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {description}
-                </ReactMarkdown>
-              </div>
+              <JobDescriptionMarkdown description={description} />
             ) : (
               <p className="text-xs text-muted-foreground/90 whitespace-pre-wrap leading-relaxed">
                 {description}
