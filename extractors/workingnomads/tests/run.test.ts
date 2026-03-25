@@ -107,4 +107,76 @@ describe("runWorkingNomads", () => {
     expect(result.jobs).toEqual([]);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it("maps the legacy usa/ca country filter to the search tokens used for US and Canada", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(createResponse([]));
+
+    await runWorkingNomads({
+      searchTerms: ["backend"],
+      selectedCountry: "usa/ca",
+      fetchImpl: fetchMock,
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const requestInit = fetchMock.mock.calls[0]?.[1];
+    expect(requestInit).toEqual(
+      expect.objectContaining({
+        method: "POST",
+        body: expect.any(String),
+      }),
+    );
+    const body = JSON.parse(String(requestInit?.body)) as {
+      query?: {
+        bool?: {
+          filter?: Array<{ terms?: { locations?: string[] } }>;
+        };
+      };
+    };
+    expect(body.query?.bool?.filter).toEqual([
+      {
+        terms: {
+          locations: expect.arrayContaining([
+            "USA",
+            "Canada",
+            "North America",
+            "Anywhere",
+          ]),
+        },
+      },
+    ]);
+  });
+
+  it("stops scanning a term once the per-term cap is reached", async () => {
+    const overflowingJob = {};
+    Object.defineProperty(overflowingJob, "title", {
+      get() {
+        throw new Error("loop should stop before inspecting overflow jobs");
+      },
+    });
+
+    const fetchMock = vi.fn().mockResolvedValue(
+      createResponse([
+        {
+          url: "https://www.workingnomads.com/job/go/123/",
+          title: "Backend Engineer",
+          description: "<p>Full-time role.</p>",
+          company_name: "Acme",
+          category_name: "Development",
+          tags: "nodejs",
+          location: "Anywhere",
+          pub_date: "2026-03-20T10:00:00-04:00",
+        },
+        overflowingJob,
+      ]),
+    );
+
+    const result = await runWorkingNomads({
+      searchTerms: ["backend"],
+      maxJobsPerTerm: 1,
+      fetchImpl: fetchMock,
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.jobs).toHaveLength(1);
+  });
 });

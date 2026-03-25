@@ -318,12 +318,12 @@ const LATIN_AMERICA_COUNTRIES = new Set([
 
 function getCountrySearchTokens(country: string | undefined): string[] {
   const normalizedCountry = normalizeCountryKey(country);
-  if (
-    !normalizedCountry ||
-    normalizedCountry === "worldwide" ||
-    normalizedCountry === "usa/ca"
-  ) {
+  if (!normalizedCountry || normalizedCountry === "worldwide") {
     return [];
+  }
+
+  if (normalizedCountry === "usa/ca") {
+    return ["USA", "Canada", "North America", "Anywhere"];
   }
 
   if (normalizedCountry === "united states" || normalizedCountry === "usa") {
@@ -621,6 +621,9 @@ export async function runWorkingNomads(
         if (options.shouldCancel?.()) {
           return { success: true, jobs };
         }
+        if (jobsFoundTerm >= maxJobsPerTerm) {
+          break;
+        }
         if (!matchesSearchTerm(job, searchTerm)) {
           continue;
         }
@@ -638,7 +641,6 @@ export async function runWorkingNomads(
 
         const dedupeKey = mapped.sourceJobId || mapped.jobUrl;
         if (seen.has(dedupeKey)) continue;
-        if (jobsFoundTerm >= maxJobsPerTerm) continue;
 
         seen.add(dedupeKey);
         jobs.push(mapped);

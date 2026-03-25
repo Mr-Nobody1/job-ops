@@ -9,18 +9,18 @@ sidebar_position: 9
 
 Original website: [Working Nomads](https://www.workingnomads.com/)
 
-This extractor uses the public [Working Nomads exposed jobs API](https://www.workingnomads.com/api/exposed_jobs/) rather than scraping rendered HTML pages.
+This extractor uses Working Nomads' JSON search API rather than scraping rendered HTML pages.
 
 Implementation split:
 
-1. `extractors/workingnomads/src/run.ts` fetches the public JSON feed, filters it against job-ops search controls, and maps rows into `CreateJobInput`.
+1. `extractors/workingnomads/src/run.ts` posts search requests to `https://www.workingnomads.com/jobsapi/_search`, applies job-ops search and location controls, and maps returned rows into `CreateJobInput`.
 2. `extractors/workingnomads/src/manifest.ts` adapts pipeline settings, emits progress updates, and registers the source for runtime discovery.
 
 ## Why it exists
 
 Working Nomads adds another remote-focused source without introducing credentials, browser automation, or brittle page scraping.
 
-Using the public API keeps the integration small and more stable than scraping category pages, while still feeding normalized jobs into the existing discovery pipeline.
+Using the JSON API keeps the integration small and more stable than scraping category pages, while still feeding normalized jobs into the existing discovery pipeline.
 
 ## How to use it
 
@@ -37,7 +37,7 @@ Defaults and constraints:
 
 - No new credentials are required.
 - Working Nomads is a remote-only source, so it does not return meaningful hybrid-only or onsite-only results.
-- The public API currently returns a single JSON feed, so filtering is performed client-side inside the extractor.
+- The upstream JSON search response is broad, so the extractor still applies local filtering for search-term matches and explicit city selection.
 - Job type is inferred from title and description when the API does not provide an explicit full-time, part-time, or contract field.
 
 ## Common problems
