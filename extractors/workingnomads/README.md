@@ -1,6 +1,6 @@
 # Working Nomads Extractor
 
-Extractor wrapper around the public [Working Nomads exposed jobs API](https://www.workingnomads.com/api/exposed_jobs/).
+Extractor wrapper around Working Nomads' JSON search API at `https://www.workingnomads.com/jobsapi/_search`.
 
 ## Notes
 
