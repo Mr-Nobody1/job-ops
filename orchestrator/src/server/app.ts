@@ -177,14 +177,21 @@ export function createBasicAuthGuard() {
 
   function requiresAuth(method: string, path: string): boolean {
     if (isPublicReadOnlyRoute(method, path)) return false;
-    if (isStatsRoute(path)) return false;
     // OPTIONS is always exempt for CORS preflight.
     if (method.toUpperCase() === "OPTIONS") return false;
 
-    // All /api/* paths require auth regardless of HTTP method.
+    // Analytics contains PII (IPs, click tracking) — always require auth.
+    if (path.startsWith("/api/tracer-links/analytics")) return true;
+
+    // Allow public read access to other tracer link routes.
+    if (path.startsWith("/api/tracer-links")) {
+      return !["GET", "HEAD"].includes(method.toUpperCase());
+    }
+
+    // All other /api/* paths require auth regardless of HTTP method.
     if (path.startsWith("/api/")) return true;
 
-    // Non-API routes (SPA, /health, /pdfs, static) remain publicly readable.
+    // Non-API routes (SPA, /health, /pdfs, static) remain publicly readable via GET/HEAD.
     return !["GET", "HEAD"].includes(method.toUpperCase());
   }
 
