@@ -1,3 +1,4 @@
+import { useKeyboardAvailability } from "@client/hooks/useKeyboardAvailability";
 import { useSettings } from "@client/hooks/useSettings";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -86,6 +87,7 @@ export const OrchestratorPage: React.FC = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isHelpDialogOpen, setIsHelpDialogOpen] = useState(false);
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
+  const hasKeyboard = useKeyboardAvailability();
 
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined"
@@ -330,11 +332,12 @@ export const OrchestratorPage: React.FC = () => {
 
   useEffect(() => {
     if (demoInfo?.demoMode) return;
+    if (!hasKeyboard) return;
     const hasSeen = localStorage.getItem("has-seen-keyboard-shortcuts");
     if (!hasSeen) {
       setIsHelpDialogOpen(true);
     }
-  }, [demoInfo?.demoMode]);
+  }, [demoInfo?.demoMode, hasKeyboard]);
 
   const onDrawerOpenChange = (open: boolean) => {
     setIsDetailDrawerOpen(open);
@@ -343,6 +346,35 @@ export const OrchestratorPage: React.FC = () => {
       handleSelectJobId(null);
     }
   };
+
+  const primaryEmptyStateAction = useMemo(() => {
+    if (activeTab === "ready" && counts.discovered > 0) {
+      return {
+        label: "Tailor discovered jobs",
+        onClick: () => setActiveTab("discovered"),
+      };
+    }
+
+    if (activeTab === "discovered" || activeTab === "all") {
+      return {
+        label: "Run pipeline",
+        onClick: () => openRunMode("automatic"),
+      };
+    }
+
+    return undefined;
+  }, [activeTab, counts.discovered, openRunMode, setActiveTab]);
+
+  const secondaryEmptyStateAction = useMemo(() => {
+    if (activeTab === "ready") {
+      return {
+        label: "Run pipeline",
+        onClick: () => openRunMode("automatic"),
+      };
+    }
+
+    return undefined;
+  }, [activeTab, openRunMode]);
 
   return (
     <>
@@ -408,6 +440,8 @@ export const OrchestratorPage: React.FC = () => {
               onSelectJob={handleSelectJob}
               onToggleSelectJob={toggleSelectJob}
               onToggleSelectAll={toggleSelectAll}
+              primaryEmptyStateAction={primaryEmptyStateAction}
+              secondaryEmptyStateAction={secondaryEmptyStateAction}
             />
 
             {/* Inspector panel: visually subordinate to list */}

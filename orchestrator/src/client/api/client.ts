@@ -121,6 +121,29 @@ export function clearBasicAuthCredentials(): void {
   cachedBasicAuthCredentials = null;
 }
 
+export function getCachedBasicAuthHeader(): string | undefined {
+  return cachedBasicAuthCredentials
+    ? encodeBasicAuth(cachedBasicAuthCredentials)
+    : undefined;
+}
+
+export function getCachedBasicAuthUsername(): string | undefined {
+  return cachedBasicAuthCredentials?.username;
+}
+
+export function hasBasicAuthPromptHandler(): boolean {
+  return basicAuthPromptHandler !== null;
+}
+
+export async function requestBasicAuthHeader(
+  request: BasicAuthPromptRequest,
+): Promise<string | null> {
+  const credentials = await requestBasicAuthCredentials(request);
+  if (!credentials) return null;
+  cachedBasicAuthCredentials = credentials;
+  return encodeBasicAuth(credentials);
+}
+
 export function __resetApiClientAuthForTests(): void {
   basicAuthPromptHandler = null;
   basicAuthPromptInFlight = null;
@@ -187,10 +210,6 @@ function normalizeHeaders(headers?: HeadersInit): Record<string, string> {
     return Object.fromEntries(headers);
   }
   return { ...headers };
-}
-
-function isWriteMethod(method: string): boolean {
-  return !["GET", "HEAD", "OPTIONS"].includes(method.toUpperCase());
 }
 
 function isUnauthorizedResponse<T>(
@@ -299,7 +318,6 @@ async function fetchApi<T>(
     );
 
     if (
-      isWriteMethod(method) &&
       isUnauthorizedResponse(response, parsed) &&
       basicAuthPromptHandler &&
       authAttempt < 2

@@ -1,9 +1,12 @@
 import { z } from "zod";
+import { getDefaultPromptTemplate } from "./prompt-template-definitions";
 import {
   CHAT_STYLE_LANGUAGE_MODE_VALUES,
   CHAT_STYLE_MANUAL_LANGUAGE_VALUES,
   type ChatStyleLanguageMode,
   type ChatStyleManualLanguage,
+  PDF_RENDERER_VALUES,
+  type PdfRenderer,
   type ResumeProjectsSettings,
 } from "./types/settings";
 
@@ -126,6 +129,7 @@ const parseChatStyleLanguageModeOrNull = createEnumParser(
 const parseChatStyleManualLanguageOrNull = createEnumParser(
   CHAT_STYLE_MANUAL_LANGUAGE_VALUES,
 );
+const parsePdfRendererOrNull = createEnumParser(PDF_RENDERER_VALUES);
 
 const WORKPLACE_TYPE_VALUES = ["remote", "hybrid", "onsite"] as const;
 const parseWorkplaceTypesOrNull = createEnumArrayParser(WORKPLACE_TYPE_VALUES);
@@ -249,6 +253,14 @@ export const settingsRegistry = {
     serialize: (value: "v4" | "v5" | null | undefined): string | null =>
       value ?? null,
   },
+  pdfRenderer: {
+    kind: "typed" as const,
+    schema: z.enum(PDF_RENDERER_VALUES),
+    default: (): PdfRenderer => "rxresume",
+    parse: parsePdfRendererOrNull,
+    serialize: (value: PdfRenderer | null | undefined): string | null =>
+      value ?? null,
+  },
   ukvisajobsMaxJobs: {
     kind: "typed" as const,
     schema: z.number().int().min(1).max(1000),
@@ -325,6 +337,31 @@ export const settingsRegistry = {
     kind: "typed" as const,
     schema: z.string().trim().max(4000),
     default: (): string => "",
+    parse: parseNonEmptyStringOrNull,
+    serialize: (value: string | null | undefined): string | null =>
+      value ?? null,
+  },
+  ghostwriterSystemPromptTemplate: {
+    kind: "typed" as const,
+    schema: z.string().trim().max(12000),
+    default: (): string =>
+      getDefaultPromptTemplate("ghostwriterSystemPromptTemplate"),
+    parse: parseNonEmptyStringOrNull,
+    serialize: (value: string | null | undefined): string | null =>
+      value ?? null,
+  },
+  tailoringPromptTemplate: {
+    kind: "typed" as const,
+    schema: z.string().trim().max(12000),
+    default: (): string => getDefaultPromptTemplate("tailoringPromptTemplate"),
+    parse: parseNonEmptyStringOrNull,
+    serialize: (value: string | null | undefined): string | null =>
+      value ?? null,
+  },
+  scoringPromptTemplate: {
+    kind: "typed" as const,
+    schema: z.string().trim().max(12000),
+    default: (): string => getDefaultPromptTemplate("scoringPromptTemplate"),
     parse: parseNonEmptyStringOrNull,
     serialize: (value: string | null | undefined): string | null =>
       value ?? null,
@@ -421,6 +458,20 @@ export const settingsRegistry = {
     parse: parseNonEmptyStringOrNull,
     serialize: (value: string | null | undefined): string | null =>
       value ?? null,
+  },
+  chatStyleSummaryMaxWords: {
+    kind: "typed" as const,
+    schema: z.number().int().min(1).max(500).nullable(),
+    default: (): number | null => null,
+    parse: parseIntOrNull,
+    serialize: serializeNullableNumber,
+  },
+  chatStyleMaxKeywordsPerSkill: {
+    kind: "typed" as const,
+    schema: z.number().int().min(1).max(50).nullable(),
+    default: (): number | null => null,
+    parse: parseIntOrNull,
+    serialize: serializeNullableNumber,
   },
   chatStyleLanguageMode: {
     kind: "typed" as const,
