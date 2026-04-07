@@ -1,14 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import * as api from "@client/api";
 import {
   ItemDialog,
@@ -35,6 +24,23 @@ import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { toast } from "sonner";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import { queryKeys } from "../lib/queryKeys";
 
 type ItemDefinition = {
@@ -569,7 +575,8 @@ function DesignResumeRail(props: {
     updateCustomFields(nextFields);
   };
 
-  const cardClassName = "rounded-xl border border-border/60 bg-card/40 p-4";
+  const cardClassName =
+    "overflow-hidden rounded-xl border border-border/60 bg-card/40 px-0";
   const labelClassName =
     "text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground";
   const fieldClassName = "bg-background/60";
@@ -577,24 +584,55 @@ function DesignResumeRail(props: {
     "rounded-lg border border-border/60 bg-background/60";
   const subtlePanelClassName =
     "rounded-lg border border-border/60 bg-muted/20 px-4 py-3";
+  const accordionValues = [
+    "picture",
+    "basics",
+    "basics-custom-fields",
+    "summary",
+    ...ITEM_DEFINITIONS.map((definition) => definition.key),
+  ];
 
-  const sectionCard = (
+  const renderSection = (
+    value: string,
     title: string,
     subtitle: string,
     children: React.ReactNode,
+    badge?: string,
   ) => (
-    <section className={cardClassName}>
-      <div className='mb-3'>
-        <h3 className='text-sm font-semibold text-foreground'>{title}</h3>
-        <p className='text-xs leading-5 text-muted-foreground'>{subtitle}</p>
-      </div>
-      {children}
-    </section>
+    <AccordionItem
+      key={value}
+      value={value}
+      className={cardClassName}
+    >
+      <AccordionTrigger className='px-4 py-3 text-left hover:no-underline'>
+        <div className='flex min-w-0 flex-1 items-start gap-3 pr-4 h-full justify-between'>
+          <div className='min-w-0 space-y-1'>
+            <h3 className='text-sm font-semibold text-foreground'>{title}</h3>
+            <p className='text-xs leading-5 text-muted-foreground'>
+              {subtitle}
+            </p>
+          </div>
+          {badge ? (
+            <div className="h-full flex items-center">
+              <div className='ml-auto shrink-0 rounded-full border border-border/60 px-2 py-0.5 text-[11px] uppercase text-muted-foreground'>
+                {badge}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </AccordionTrigger>
+      <AccordionContent className='px-4 pb-4 pt-0'>{children}</AccordionContent>
+    </AccordionItem>
   );
 
   return (
-    <div className='space-y-4'>
-      {sectionCard(
+    <Accordion
+      type='multiple'
+      defaultValue={[]}
+      className='space-y-3'
+    >
+      {renderSection(
+        "picture",
         "Picture",
         "Inline controls matching the imported resume picture block.",
         <div className='grid gap-3'>
@@ -739,7 +777,8 @@ function DesignResumeRail(props: {
         </div>,
       )}
 
-      {sectionCard(
+      {renderSection(
+        "basics",
         "Basics",
         "Core identity fields used by profile context and exports.",
         <div className='grid gap-3'>
@@ -774,7 +813,8 @@ function DesignResumeRail(props: {
         </div>,
       )}
 
-      {sectionCard(
+      {renderSection(
+        "basics-custom-fields",
         "Basics Custom Fields",
         "Inline badges and links shown with the main contact block.",
         <div className='space-y-3'>
@@ -877,9 +917,11 @@ function DesignResumeRail(props: {
             Add custom field
           </Button>
         </div>,
+        customFields.length === 0 ? "Empty" : `${customFields.length}`,
       )}
 
-      {sectionCard(
+      {renderSection(
+        "summary",
         "Summary",
         "Rich text content stored as HTML.",
         <div className='space-y-3'>
@@ -937,7 +979,8 @@ function DesignResumeRail(props: {
           });
         };
 
-        return sectionCard(
+        return renderSection(
+          definition.key,
           definition.title,
           definition.description,
           <div className='space-y-3'>
@@ -1060,9 +1103,10 @@ function DesignResumeRail(props: {
               ))
             )}
           </div>,
+          items.length === 0 ? "Empty" : `${items.length}`,
         );
       })}
-    </div>
+    </Accordion>
   );
 }
 
@@ -1374,7 +1418,7 @@ export const DesignResumePage: React.FC = () => {
                 <div className='min-h-0 flex-1 overflow-y-auto p-4'>{rail}</div>
               </div>
             </aside>
-            <section className='relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-border/70'>
+            <section className='relative flex min-h-0 flex-col overflow-hidden rounded-2xl'>
               <div className='relative min-h-0 flex-1 overflow-hidden'>
                 <TransformWrapper
                   initialScale={0.9}
