@@ -363,6 +363,13 @@ export const settingsRegistry = {
     serialize: (value: string | null | undefined): string | null =>
       value ?? null,
   },
+  ghostwriterStopSlopEnabled: {
+    kind: "typed" as const,
+    schema: z.boolean(),
+    default: (): boolean => false,
+    parse: parseBitBoolOrNull,
+    serialize: serializeBitBool,
+  },
   tailoringPromptTemplate: {
     kind: "typed" as const,
     schema: z.string().trim().max(12000),

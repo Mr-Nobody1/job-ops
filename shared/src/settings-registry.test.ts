@@ -152,6 +152,10 @@ describe("settingsRegistry helpers", () => {
       expect(settingsRegistry.renderMarkdownInJobDescriptions.parse("0")).toBe(
         false,
       );
+      expect(settingsRegistry.ghostwriterStopSlopEnabled.parse("1")).toBe(true);
+      expect(settingsRegistry.ghostwriterStopSlopEnabled.parse("0")).toBe(
+        false,
+      );
     });
 
     it("serializes bit bools correctly", () => {
@@ -165,6 +169,12 @@ describe("settingsRegistry helpers", () => {
       expect(
         settingsRegistry.renderMarkdownInJobDescriptions.serialize(false),
       ).toBe("0");
+      expect(settingsRegistry.ghostwriterStopSlopEnabled.serialize(true)).toBe(
+        "1",
+      );
+      expect(settingsRegistry.ghostwriterStopSlopEnabled.serialize(false)).toBe(
+        "0",
+      );
     });
   });
 
