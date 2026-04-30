@@ -85,11 +85,11 @@ Settings gives you runtime overrides for the key parts of discovery, scoring, ta
   - Formality
   - Output language mode
   - Manual output language
-  - Stop Slop for Ghostwriter
+  - Use Stop Slop for Ghostwriter
   - Constraints
   - Do-not-use terms
 - These settings apply to Ghostwriter and resume tailoring
-- Stop Slop applies only to Ghostwriter. It adds extra instructions that cut filler, formulaic AI phrasing, passive voice, vague claims, and em dashes.
+- `Use Stop Slop for Ghostwriter` applies only to Ghostwriter. It adds extra instructions that cut filler, formulaic AI phrasing, passive voice, vague claims, and em dashes.
 - Use the output language controls as the primary way to choose generated language
 - Choose how AI output language is resolved:
   - `Manual`: always use the language you select, such as English, German, French, or Spanish
@@ -100,7 +100,7 @@ Settings gives you runtime overrides for the key parts of discovery, scoring, ta
 - Max keywords per skill: optional cap on keywords per skill category in tailoring (empty = no limit)
 - These numeric limits override any similar constraints written in the Constraints text field
 - Do-not-use terms are model guidance, not a guaranteed output filter
-- Stop Slop is disabled by default and affects only new Ghostwriter responses after you save
+- `Use Stop Slop for Ghostwriter` is disabled by default and affects only new Ghostwriter responses after you save
 
 #### Writing Style & Language workflow
 

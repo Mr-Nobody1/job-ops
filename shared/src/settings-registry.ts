@@ -36,7 +36,9 @@ function parseJsonArrayOrNull(raw: string | undefined): string[] | null {
 
 function parseBitBoolOrNull(raw: string | undefined): boolean | null {
   if (!raw) return null;
-  return raw === "true" || raw === "1";
+  if (raw === "true" || raw === "1") return true;
+  if (raw === "false" || raw === "0") return false;
+  return null;
 }
 
 function normalizeLlmProviderOrNull(raw: string | undefined): string | null {
