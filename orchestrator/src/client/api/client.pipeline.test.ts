@@ -123,4 +123,55 @@ describe("pipeline client helpers", () => {
       expect.any(Object),
     );
   });
+
+  it("prepares the challenge viewer through the authenticated API client", async () => {
+    const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      createJsonResponse(200, {
+        ok: true,
+        data: {
+          available: true,
+          viewerUrl: "/challenge-viewer/session/viewer-token/vnc.html",
+          reason: null,
+        },
+        meta: { requestId: "req-viewer" },
+      }),
+    );
+
+    await expect(api.prepareChallengeViewer()).resolves.toEqual({
+      available: true,
+      viewerUrl: "/challenge-viewer/session/viewer-token/vnc.html",
+      reason: null,
+    });
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/api/pipeline/challenge-viewer",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("sends challenge solve requests through the authenticated API client", async () => {
+    const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      createJsonResponse(200, {
+        ok: true,
+        data: {
+          status: "solved",
+          extractorId: "gradcracker",
+          challengesRemaining: 0,
+        },
+        meta: { requestId: "req-solve" },
+      }),
+    );
+
+    await expect(api.solvePipelineChallenge("gradcracker")).resolves.toEqual({
+      status: "solved",
+      extractorId: "gradcracker",
+      challengesRemaining: 0,
+    });
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/api/pipeline/solve-challenge",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ extractorId: "gradcracker" }),
+      }),
+    );
+  });
 });

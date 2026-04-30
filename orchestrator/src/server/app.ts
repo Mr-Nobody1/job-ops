@@ -21,6 +21,7 @@ import { runWithRequestContext } from "@infra/request-context";
 import { sanitizeUnknown } from "@infra/sanitize";
 import { verifyToken } from "@server/auth/jwt";
 import * as usersRepo from "@server/repositories/users";
+import { proxyChallengeViewerRequest } from "@server/services/challenge-viewer";
 import { DEFAULT_TENANT_ID } from "@server/tenancy/constants";
 import cors from "cors";
 import express from "express";
@@ -351,6 +352,10 @@ export function createApp() {
   // API routes
   app.use("/api", apiRouter);
   app.use(notFoundApiHandler());
+
+  app.use("/challenge-viewer/session", (req, res) => {
+    void proxyChallengeViewerRequest(req, res);
+  });
 
   app.get("/cv/:slug", async (req, res) => {
     const slug = req.params.slug?.trim();

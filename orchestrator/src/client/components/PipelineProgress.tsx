@@ -2,17 +2,22 @@
  * Live pipeline progress display component.
  */
 
-import { getPipelineProgressSnapshot } from "@client/api";
+import {
+  getPipelineProgressSnapshot,
+  prepareChallengeViewer,
+  solvePipelineChallenge,
+} from "@client/api";
 import {
   sourceLabel as getSourceLabel,
   isExtractorSourceId,
 } from "@shared/extractors";
 import type { PipelineProgressState } from "@shared/types";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldAlert } from "lucide-react";
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { subscribeToEventSource } from "@/client/lib/sse";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -25,6 +30,7 @@ interface PipelineProgressProps {
 const stepLabels: Record<PipelineProgressState["step"], string> = {
   idle: "Ready",
   crawling: "Crawling",
+  challenge_required: "Challenge",
   importing: "Importing",
   scoring: "Scoring",
   processing: "Processing",
@@ -36,6 +42,7 @@ const stepLabels: Record<PipelineProgressState["step"], string> = {
 const stepBadgeClasses: Record<PipelineProgressState["step"], string> = {
   idle: "bg-muted text-muted-foreground border-border",
   crawling: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+  challenge_required: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   importing: "bg-sky-500/10 text-sky-400 border-sky-500/20",
   scoring: "bg-amber-500/10 text-amber-400 border-amber-500/20",
   processing: "bg-primary/10 text-primary border-primary/20",
@@ -68,11 +75,42 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
   const [transport, setTransport] = useState<"connecting" | "live" | "polling">(
     "connecting",
   );
+  const [solvingExtractor, setSolvingExtractor] = useState<string | null>(null);
+
+  const handleSolveChallenge = useCallback(async (extractorId: string) => {
+    setSolvingExtractor(extractorId);
+    const viewerWindow = window.open("about:blank", "_blank");
+    if (viewerWindow) {
+      viewerWindow.opener = null;
+    }
+
+    try {
+      const viewer = await prepareChallengeViewer();
+      if (viewer.available && viewer.viewerUrl) {
+        if (viewerWindow) {
+          viewerWindow.location.href = viewer.viewerUrl;
+        } else {
+          window.open(viewer.viewerUrl, "_blank", "noopener");
+        }
+      } else {
+        viewerWindow?.close();
+      }
+
+      await solvePipelineChallenge(extractorId);
+    } catch (err) {
+      viewerWindow?.close();
+      console.error("Solve challenge request failed:", err);
+    } finally {
+      setSolvingExtractor(null);
+    }
+  }, []);
 
   const percentage = useMemo(() => {
     if (!progress) return 0;
 
     switch (progress.step) {
+      case "challenge_required":
+        return 15;
       case "crawling": {
         if (progress.crawlingTermsTotal > 0) {
           return clamp(
@@ -377,6 +415,43 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
               </div>
             </>
           )}
+
+          {step === "challenge_required" &&
+            progress.pendingChallenges &&
+            progress.pendingChallenges.length > 0 && (
+              <div className="space-y-2">
+                <Separator />
+                {progress.pendingChallenges.map((challenge) => (
+                  <div
+                    key={challenge.extractorId}
+                    className="flex items-center justify-between rounded-md border border-orange-500/20 bg-orange-500/10 p-3"
+                  >
+                    <div className="flex items-center gap-2 text-sm text-orange-400">
+                      <ShieldAlert className="h-4 w-4 shrink-0" />
+                      <span>{challenge.extractorName}</span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-orange-500/30 text-orange-400 hover:bg-orange-500/20"
+                      disabled={solvingExtractor === challenge.extractorId}
+                      onClick={() =>
+                        handleSolveChallenge(challenge.extractorId)
+                      }
+                    >
+                      {solvingExtractor === challenge.extractorId ? (
+                        <>
+                          <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+                          Solving…
+                        </>
+                      ) : (
+                        "Solve"
+                      )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
 
           {step === "failed" && progress.error && (
             <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">

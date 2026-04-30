@@ -1416,6 +1416,35 @@ export async function getPipelineRuns(): Promise<PipelineRun[]> {
   return fetchApi<PipelineRun[]>("/pipeline/runs");
 }
 
+export async function prepareChallengeViewer(): Promise<{
+  available: boolean;
+  viewerUrl: string | null;
+  reason: string | null;
+}> {
+  return fetchApi<{
+    available: boolean;
+    viewerUrl: string | null;
+    reason: string | null;
+  }>("/pipeline/challenge-viewer", {
+    method: "POST",
+  });
+}
+
+export async function solvePipelineChallenge(extractorId: string): Promise<{
+  status: "solved";
+  extractorId: string;
+  challengesRemaining: number;
+}> {
+  return fetchApi<{
+    status: "solved";
+    extractorId: string;
+    challengesRemaining: number;
+  }>("/pipeline/solve-challenge", {
+    method: "POST",
+    body: JSON.stringify({ extractorId }),
+  });
+}
+
 export async function getPipelineRunInsights(
   id: string,
 ): Promise<PipelineRunInsights> {

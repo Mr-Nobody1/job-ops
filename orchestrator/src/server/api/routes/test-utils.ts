@@ -48,6 +48,8 @@ vi.mock("@server/pipeline/index", () => {
       alreadyRequested: false,
     })),
     isPipelineCancelRequested: vi.fn(() => false),
+    getPendingChallenges: vi.fn(() => []),
+    resolvePipelineChallenge: vi.fn(() => ({ resolved: false, remaining: 0 })),
     subscribeToProgress: vi.fn((listener: (data: unknown) => void) => {
       listener(progress);
       return () => {};
@@ -81,6 +83,17 @@ vi.mock("@server/services/activation-funnel", () => ({
   reconcileActivationMilestonesFromHistorySafely: vi
     .fn()
     .mockResolvedValue(undefined),
+}));
+
+vi.mock("@server/services/challenge-viewer", () => ({
+  ensureChallengeViewer: vi
+    .fn()
+    .mockResolvedValue({ available: false, reason: "not a container" }),
+  createChallengeViewerSession: vi.fn(() => ({ token: "viewer-token" })),
+  buildChallengeViewerUrl: vi.fn(
+    () => "/challenge-viewer/session/viewer-token/vnc.html",
+  ),
+  proxyChallengeViewerRequest: vi.fn(),
 }));
 
 vi.mock("@server/services/visa-sponsors/index", () => ({
